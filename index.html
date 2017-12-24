@@ -24,24 +24,84 @@
 
   <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
   <link rel="icon" type="image/png" href="images/favicon.png">
   <script src="src/vendor/anime.min.js"></script>
 
+  <style>
+    body {
+      background-color: #000;
+    }
+    .led {
+      margin-top: 5em;
+      float: left;
+      width: 5em;
+      background-color: #FFF;
+      opacity: 0;
+    }
+
+  </style>
 </head>
 <body>
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <div class="container">
-    <div class="row">
-      <div class="one-half column" style="margin-top: 25%">
-        <h4>Basic Page</h4>
-        <p>This index.html page is a placeholder with the CSS, font and favicon. It's just waiting for you to add some content! If you need some help hit up the <a href="http://www.getskeleton.com">Skeleton documentation</a>.</p>
-      </div>
-    </div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
+      <div class="led">LED</div>
   </div>
 
-<!-- End Document
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <script>
+
+    const FACE_LENGTH = 12;
+
+    console.log('good to see you, friend');
+
+    // e.g. percentChance(25) is true 25% of time
+    var percentChance = function(max) {
+      return max >= Math.floor(Math.random() * 100) + 1;  
+    };
+
+    var getNewTestAnimation = function() {
+      var faceAnimation = [];
+      for (var i = 0; i < FACE_LENGTH; i++) {
+        var ledAnimation = [];
+        var elapsed = 0;
+        for (var j = 0; j < 100; j++) {
+          if (percentChance(30)) {
+            ledAnimation.push(elapsed);
+          }
+          elapsed += 300;
+        }
+        faceAnimation.push(ledAnimation);
+      }
+      return faceAnimation;
+    };
+
+    var timeline = anime.timeline();
+    var animation = getNewTestAnimation();
+    for (var i = 0; i < FACE_LENGTH; i++) {
+      var targetString = '.led:nth-of-type(' + (i + 1).toString() + ')';
+      var opacity = 0; // assuming led default is off
+      for (var j = 0; j < animation[i].length; j++) {
+        timeline.add({
+          targets: targetString,
+          opacity: opacity === 0 ? ++opacity : --opacity,
+          offset: animation[i][j]
+        });
+      }
+    }
+
+  </script>
 </body>
 </html>
