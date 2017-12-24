@@ -36,6 +36,7 @@
       margin-top: 5em;
       float: left;
       width: 5em;
+      height: 1em;
       background-color: #FFF;
       opacity: 0;
     }
@@ -46,19 +47,7 @@
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <div class="container">
-      <div class="led">LED</div>
-      <div class="led">LED</div>
-      <div class="led">LED</div>
-      <div class="led">LED</div>
-      <div class="led">LED</div>
-      <div class="led">LED</div>
-      <div class="led">LED</div>
-      <div class="led">LED</div>
-      <div class="led">LED</div>
-      <div class="led">LED</div>
-      <div class="led">LED</div>
-      <div class="led">LED</div>
+  <div id="face-ui">
   </div>
 
   <script>
@@ -67,40 +56,83 @@
 
     console.log('good to see you, friend');
 
-    // e.g. percentChance(25) is true 25% of time
-    var percentChance = function(max) {
-      return max >= Math.floor(Math.random() * 100) + 1;  
-    };
+    let FaceUI = (function() {
 
-    var getNewTestAnimation = function() {
-      var faceAnimation = [];
-      for (var i = 0; i < FACE_LENGTH; i++) {
-        var ledAnimation = [];
-        var elapsed = 0;
-        for (var j = 0; j < 100; j++) {
-          if (percentChance(30)) {
-            ledAnimation.push(elapsed);
+      let timeline = anime.timeline();
+      let containerId = 'body'; // default
+      const LED_CLASS_NAME = 'led';
+
+
+      // e.g. percentChance(25) is true 25% of time
+      const percentChance = function(max) {
+        return max >= Math.floor(Math.random() * 100) + 1;  
+      };
+
+
+      const getNewTestAnimation = function() {
+        let faceAnimation = [];
+        for (let i = 0; i < FACE_LENGTH; i++) {
+          let ledAnimation = [];
+          let elapsed = 0;
+          for (let j = 0; j < 100; j++) {
+            if (percentChance(50)) {
+              ledAnimation.push(elapsed);
+            }
+            elapsed += 200;
           }
-          elapsed += 300;
+          faceAnimation.push(ledAnimation);
         }
-        faceAnimation.push(ledAnimation);
-      }
-      return faceAnimation;
-    };
+        return faceAnimation;
+      };
 
-    var timeline = anime.timeline();
-    var animation = getNewTestAnimation();
-    for (var i = 0; i < FACE_LENGTH; i++) {
-      var targetString = '.led:nth-of-type(' + (i + 1).toString() + ')';
-      var opacity = 0; // assuming led default is off
-      for (var j = 0; j < animation[i].length; j++) {
-        timeline.add({
-          targets: targetString,
-          opacity: opacity === 0 ? ++opacity : --opacity,
-          offset: animation[i][j]
-        });
+
+      const getLedDivSelector = function(i) {
+        return '#' + containerId 
+          + ' .' + LED_CLASS_NAME + ':nth-of-type(' + (i + 1).toString() + ')';
       }
-    }
+
+
+      const playAnimation = function(animation) {
+        for (let i = 0; i < FACE_LENGTH; i++) {
+          let targetString = getLedDivSelector(i);
+          console.log(targetString);
+          let opacity = 0; // Assumes led default is off
+          for (let j = 0; j < animation[i].length; j++) {
+            timeline.add({
+              targets: targetString,
+              opacity: opacity === 0 ? ++opacity : --opacity,
+              offset: animation[i][j]
+            });
+          }
+        }
+      }; 
+
+
+      const select = function(id) {
+        containerId = id;
+        for (let i = 0; i < FACE_LENGTH; i++) {
+          let ledDiv = document.createElement('div');
+          ledDiv.className = 'led';
+          document.getElementById(id).append(ledDiv);
+        }
+      };
+
+
+      const playTestAnimation = function() {
+        playAnimation(getNewTestAnimation())
+      };
+
+
+      return {
+        "select": select,
+        "playTestAnimation": playTestAnimation,
+        "playAnimation": playAnimation
+      };
+
+    })();
+
+    FaceUI.select('face-ui');
+    FaceUI.playTestAnimation();
 
   </script>
 </body>
